@@ -1,8 +1,7 @@
 import notion from "@notionhq/client";
 import NOTION_META from "./common/notion-meta-selection.mjs";
 import { ConfigurationError } from "@pipedream/platform";
-import { NotionConverter } from "notion-to-md";
-import { DefaultExporter } from "notion-to-md/plugins/exporter";
+import { NotionToMarkdown } from "notion-to-md";
 
 export default {
   type: "app",
@@ -325,7 +324,8 @@ export default {
         block_id: blockId,
       });
     },
-    async retrieveBlockChildren(block, params = {}) {
+    async retrieveBlockChildren(block, subpagesOnly = false) {
+      const params = {};
       const children = [];
       if (!block.has_children) return children;
 
@@ -335,11 +335,11 @@ export default {
           next_cursor: nextCursor,
         } = await this.listBlockChildren(block.id, params);
 
-        children.push(...results);
+        children.push(...(results.filter((child) => !subpagesOnly || child.type === "child_page")));
         params.next_cursor = nextCursor;
       } while (params.next_cursor);
 
-      (await Promise.all(children.map((child) => this.retrieveBlockChildren(child))))
+      (await Promise.all(children.map((child) => this.retrieveBlockChildren(child, subpagesOnly))))
         .forEach((c, i) => {
           children[i].children = c;
         });
@@ -357,19 +357,20 @@ export default {
 
       return response.results;
     },
-    async getPageAsMarkdown(pageId) {
-      const client = this._getNotionClient();
+    async getPageAsMarkdown(pageId, shouldRetrieveChildren) {
+      const notion = this._getNotionClient();
 
-      const buffer = {};
-      const exporter = new DefaultExporter({
-        outputType: "buffer",
-        buffer,
+      const n2m = new NotionToMarkdown({
+        notionClient: notion,
+        config: {
+          separateChildPage: true,
+        },
       });
-
-      const n2m = new NotionConverter(client).withExporter(exporter);
-      await n2m.convert(pageId);
-
-      return Object.values(buffer)[0];
+      const blocks = await n2m.pageToMarkdown(pageId);
+      const output = n2m.toMarkdownString(blocks);
+      return shouldRetrieveChildren
+        ? output
+        : output.parent;
     },
   },
 };
