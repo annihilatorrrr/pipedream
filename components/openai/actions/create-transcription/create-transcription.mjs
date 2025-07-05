@@ -1,12 +1,12 @@
+import { getFileStreamAndMetadata } from "@pipedream/platform";
 import openai from "../../openai.app.mjs";
 import FormData from "form-data";
-import fs from "fs";
 
 export default {
   key: "openai-create-transcription",
   name: "Create Transcription",
   description: "Transcribes audio into the input language. [See the documentation](https://platform.openai.com/docs/api-reference/audio/createTranscription)",
-  version: "0.2.0",
+  version: "0.3.1",
   type: "action",
   props: {
     openai,
@@ -70,6 +70,12 @@ export default {
       description: "The timestamp granularities to populate for this transcription. `response_format` must be set `verbose_json` to use timestamp granularities. Either or both of these options are supported: `word`, or `segment`. Note: There is no additional latency for segment timestamps, but generating word timestamps incurs additional latency.",
       optional: true,
     },
+    syncDir: {
+      type: "dir",
+      accessMode: "read",
+      sync: true,
+      optional: true,
+    },
   },
   methods: {
     createTranscription(opts = {}) {
@@ -90,11 +96,15 @@ export default {
     } = this;
 
     const data = new FormData();
-    const content = fs.createReadStream(file.includes("tmp/")
-      ? file
-      : `/tmp/${file}`);
+    const {
+      stream, metadata,
+    } = await getFileStreamAndMetadata(file);
 
-    data.append("file", content);
+    data.append("file", stream, {
+      contentType: metadata.contentType,
+      knownLength: metadata.size,
+      filename: metadata.name,
+    });
 
     for (const [
       key,

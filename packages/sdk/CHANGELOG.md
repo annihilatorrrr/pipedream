@@ -2,6 +2,61 @@
 
 # Changelog
 
+## [1.7.0] - 2025-07-03
+
+### Added
+
+- Added optional scope parameter to backendClient creation.
+
+## [1.6.11] - 2025-07-02
+
+### Added
+
+- Added `stash` to `V1Component`
+
+## [1.6.10] - 2025-07-01
+
+### Added
+
+- Added `sortKey` and `sortDirection` options to the `getApps` method
+
+## [1.6.9] - 2025-06-10
+
+### Added
+
+- Added types for the missing configurable props
+
+## Changed
+
+- Fixed the `Defaultable` type to correctly handle arrays
+- Fixed the `ConfigurablePropTimer` type to define cron expressions and
+  time intervals
+- Marked the `auth` field in the SQL prop type as optional
+- Fixed the `App` type to include the `description` field returned by the API
+- Fixed the `GetAppsResponse` type to include the pagination stuff
+
+## [1.6.8] - 2025-06-07
+
+### Added
+
+- Added `endpoint_url` field to the component metadata, providing the URL to the
+  HTTP interface of the component.
+- Added missing pagination fields to the `GetComponentsResponse`  and
+  `GetAccountsResponse` types.
+
+## [1.6.7] - 2025-06-06
+
+### Added
+
+- Added `stashId` option to the `runAction` method, which allows files to be
+  persisted between action runs.
+
+## [1.6.6] - 2025-06-05
+
+### Added
+
+- Added support for `sql` prop type for `connect-react` package
+
 ## [1.6.5] - 2025-06-02
 
 ### Changed
