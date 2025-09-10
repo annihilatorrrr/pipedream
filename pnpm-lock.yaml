@@ -3005,6 +3005,9 @@ importers:
 
   components/coinbase_commerce: {}
 
+  components/coinbase_developer_platform:
+    specifiers: {}
+
   components/coingecko: {}
 
   components/coinlore:
@@ -4566,6 +4569,9 @@ importers:
       '@pipedream/platform':
         specifier: ^1.2.0
         version: 1.6.6
+
+  components/espy:
+    specifiers: {}
 
   components/estreamdesk:
     dependencies:
