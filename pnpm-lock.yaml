@@ -8769,7 +8769,11 @@ importers:
 
   components/lead_identity_check: {}
 
-  components/leadboxer: {}
+  components/leadboxer:
+    dependencies:
+      '@pipedream/platform':
+        specifier: ^3.4.0
+        version: 3.4.0
 
   components/leaddyno:
     dependencies:
